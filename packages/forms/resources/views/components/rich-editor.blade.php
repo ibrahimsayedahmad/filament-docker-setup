@@ -377,6 +377,11 @@
                     @endif
                     x-ref="trix"
                     wire:ignore
+                    wire:key="{{ $this->getId() }}.{{ $statePath }}.{{ $field::class }}.{{
+                        substr(md5(serialize([
+                            $isDisabled,
+                        ])), 0, 64)
+                    }}"
                     @if ($isGrammarlyDisabled())
                         data-gramm="false"
                         data-gramm_editor="false"
