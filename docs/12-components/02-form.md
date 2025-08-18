@@ -246,7 +246,7 @@ public function form(Schema $schema): Schema
 
 ## Using multiple forms
 
-By default, the `InteractsWithForms` trait only handles one form per Livewire component - `form()`. To add more forms to the Livewire component, you can define them in the `getForms()` method, and return an array containing the name of each form:
+By default, the `InteractsWithSchemas` trait only handles one form per Livewire component - `form()`. To add more forms to the Livewire component, you can define them in the `getForms()` method, and return an array containing the name of each form:
 
 ```php
 protected function getForms(): array
