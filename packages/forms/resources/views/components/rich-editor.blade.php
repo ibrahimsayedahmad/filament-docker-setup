@@ -3,10 +3,11 @@
 
     $id = $getId();
     $statePath = $getStatePath();
+    $isDisabled = $isDisabled();
 @endphp
 
 <x-dynamic-component :component="$getFieldWrapperView()" :field="$field">
-    @if ($isDisabled())
+    @if ($isDisabled)
         <div
             x-data="{
                 state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$statePath}')") }},
