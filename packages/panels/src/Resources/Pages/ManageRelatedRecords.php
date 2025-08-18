@@ -280,14 +280,6 @@ class ManageRelatedRecords extends Page implements Tables\Contracts\HasTable
 
     public function getDefaultActionSchemaResolver(Action $action): ?Closure
     {
-        if (
-            ($action instanceof CreateAction) &&
-            ($relatedResource = static::getRelatedResource()) &&
-            ($relatedResource::hasPage('create'))
-        ) {
-            return null;
-        }
-
         return match (true) {
             $action instanceof CreateAction, $action instanceof EditAction => fn (Schema $schema): Schema => $this->form($this->defaultForm($schema)),
             $action instanceof ViewAction => fn (Schema $schema): Schema => $this->infolist($this->defaultInfolist($this->form($this->defaultForm($schema)))),
