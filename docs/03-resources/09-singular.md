@@ -107,7 +107,7 @@ The page Blade view should render the form and a Save button. The `wire:submit` 
 
 ```blade
 <x-filament::page>
-    <form wire:submit="save">
+    <form class="fi-sc-form" id="form" wire:submit="save">
         {{ $this->form }}
     
         <div>
