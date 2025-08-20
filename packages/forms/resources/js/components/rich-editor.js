@@ -20,6 +20,10 @@ export default function richEditorFormComponent({
     state,
     statePath,
     uploadingFileMessage,
+    allowedMimeTypes,
+    maxFileSize,
+    fileSizeExceededMessage,
+    invalidMimeTypeMessage,
     floatingToolbars,
 }) {
     let editor
@@ -68,6 +72,10 @@ export default function richEditorFormComponent({
                     placeholder,
                     statePath,
                     uploadingFileMessage,
+                    allowedMimeTypes,
+                    maxFileSize,
+                    fileSizeExceededMessage,
+                    invalidMimeTypeMessage,
                     $wire: this.$wire,
                     floatingToolbars,
                 }),

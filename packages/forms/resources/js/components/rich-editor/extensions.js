@@ -46,6 +46,10 @@ export default async ({
     placeholder,
     statePath,
     uploadingFileMessage,
+    allowedMimeTypes,
+    maxFileSize,
+    fileSizeExceededMessage,
+    invalidMimeTypeMessage,
     $wire,
 }) => [
     Blockquote,
@@ -84,6 +88,10 @@ export default async ({
         key,
         statePath,
         uploadingMessage: uploadingFileMessage,
+        allowedMimeTypes,
+        maxFileSize,
+        fileSizeExceededMessage,
+        invalidMimeTypeMessage,
     }),
     ...(mergeTags.length
         ? [

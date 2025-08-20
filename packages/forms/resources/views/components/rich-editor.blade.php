@@ -42,6 +42,10 @@
                         state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$statePath}')", isOptimisticallyLive: false) }},
                         statePath: @js($statePath),
                         uploadingFileMessage: @js($getUploadingFileMessage()),
+                        allowedMimeTypes: @js($getAcceptedFileTypes()),
+                        maxFileSize: @js($getMaxSize()),
+                        fileSizeExceededMessage: @js(__('validation.max.file', ['attribute' => '', 'max' => $getMaxSize()])),
+                        invalidMimeTypeMessage: @js(__('validation.mimetypes', ['attribute' => '', 'values' => $getAcceptedFileTypes() ? implode(', ', $getAcceptedFileTypes()) : ''])),
                         floatingToolbars: @js($floatingToolbars),
                     })"
             x-bind:class="{

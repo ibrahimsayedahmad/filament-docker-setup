@@ -1,7 +1,10 @@
 import { Extension } from '@tiptap/core'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
 
-const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+const defaultAllowedMimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+const defaultMaxFileSize = 10 * 1024 * 1024 // 10MB in bytes
+const defaultFileSizeExceededMessage = 'File size exceeds maximum allowed'
+const defaultInvalidMimeTypeMessage = 'File type is not allowed'
 
 const dispatchFormEvent = (editorView, name, detail = {}) => {
     editorView.dom.closest('form')?.dispatchEvent(
@@ -13,13 +16,38 @@ const dispatchFormEvent = (editorView, name, detail = {}) => {
     )
 }
 
+const validateFile = (file, allowedMimeTypes, maxFileSize, invalidMimeTypeMessage, fileSizeExceededMessage) => {
+    const errors = []
+    
+    if (!allowedMimeTypes.includes(file.type)) {
+        errors.push(invalidMimeTypeMessage || defaultInvalidMimeTypeMessage)
+    }
+    
+    if (file.size > maxFileSize) {
+        errors.push(fileSizeExceededMessage || defaultFileSizeExceededMessage)
+    }
+    
+    return {
+        isValid: errors.length === 0,
+        errors
+    }
+}
+
 const LocalFilesPlugin = ({
     editor,
     get$WireUsing,
     key,
     statePath,
     uploadingMessage,
+    allowedMimeTypes,
+    maxFileSize,
+    fileSizeExceededMessage,
+    invalidMimeTypeMessage,
 }) => {
+    // Use defaults if not provided from PHP
+    const effectiveAllowedMimeTypes = allowedMimeTypes || defaultAllowedMimeTypes
+    const effectiveMaxFileSize = maxFileSize || defaultMaxFileSize
+    
     const getFileAttachmentUrl = (fileKey) =>
         get$WireUsing().callSchemaComponentMethod(
             key,
@@ -37,13 +65,35 @@ const LocalFilesPlugin = ({
                     return false
                 }
 
-                const files = Array.from(event.dataTransfer.files).filter(
-                    (file) => allowedMimeTypes.includes(file.type),
-                )
+                const allFiles = Array.from(event.dataTransfer.files)
+                const validFiles = []
+                const rejectedFiles = []
 
-                if (!files.length) {
+                allFiles.forEach(file => {
+                    const validation = validateFile(file, effectiveAllowedMimeTypes, effectiveMaxFileSize, invalidMimeTypeMessage, fileSizeExceededMessage)
+                    if (validation.isValid) {
+                        validFiles.push(file)
+                    } else {
+                        rejectedFiles.push({ file, errors: validation.errors })
+                    }
+                })
+
+                if (rejectedFiles.length > 0) {
+                    const errorMessages = rejectedFiles.map(({ file, errors }) => 
+                        `<p>${file.name}: ${errors.join(', ')}</p>`
+                    ).join('')
+
+                    new FilamentNotification()
+                        .body(errorMessages)
+                        .danger()
+                        .send()
+                }
+
+                if (!validFiles.length) {
                     return false
                 }
+
+                const files = validFiles
 
                 dispatchFormEvent(editorView, 'form-processing-started', {
                     message: uploadingMessage,
@@ -145,13 +195,35 @@ const LocalFilesPlugin = ({
                     return false
                 }
 
-                const files = Array.from(event.clipboardData.files).filter(
-                    (file) => allowedMimeTypes.includes(file.type),
-                )
+                const allFiles = Array.from(event.clipboardData.files)
+                const validFiles = []
+                const rejectedFiles = []
 
-                if (!files.length) {
+                allFiles.forEach(file => {
+                    const validation = validateFile(file, effectiveAllowedMimeTypes, effectiveMaxFileSize, invalidMimeTypeMessage, fileSizeExceededMessage)
+                    if (validation.isValid) {
+                        validFiles.push(file)
+                    } else {
+                        rejectedFiles.push({ file, errors: validation.errors })
+                    }
+                })
+
+                if (rejectedFiles.length > 0) {
+                    const errorMessages = rejectedFiles.map(({ file, errors }) => 
+                        `<p>${file.name}: ${errors.join(', ')}</p>`
+                    ).join('')
+
+                    new FilamentNotification()
+                        .body(errorMessages)
+                        .danger()
+                        .send()
+                }
+
+                if (!validFiles.length) {
                     return false
                 }
+
+                const files = validFiles
 
                 event.preventDefault()
                 event.stopPropagation()
@@ -256,6 +328,10 @@ export default Extension.create({
             statePath: null,
             uploadingMessage: null,
             get$WireUsing: null,
+            allowedMimeTypes: defaultAllowedMimeTypes,
+            maxFileSize: defaultMaxFileSize,
+            fileSizeExceededMessage: defaultFileSizeExceededMessage,
+            invalidMimeTypeMessage: defaultInvalidMimeTypeMessage,
         }
     },
 

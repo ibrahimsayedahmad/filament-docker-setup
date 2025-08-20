@@ -19,6 +19,7 @@ use Filament\Forms\Components\RichEditor\StateCasts\RichEditorStateCast;
 use Filament\Schemas\Components\StateCasts\Contracts\StateCast;
 use Filament\Support\Concerns\HasExtraAlpineAttributes;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -81,6 +82,13 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
      * @var array<string | array<string>> | Closure | null
      */
     protected array | Closure | null $floatingToolbars = null;
+
+    /**
+     * @var array<string> | Arrayable | Closure | null
+     */
+    protected array | Arrayable | Closure | null $acceptedFileTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
+    protected int | Closure | null $maxSize = null;
 
     protected function setUp(): void
     {
@@ -881,5 +889,41 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
         }
 
         return $rules;
+    }
+
+    /**
+     * @param  array<string> | Arrayable | Closure  $types
+     */
+    public function acceptedFileTypes(array | Arrayable | Closure $types): static
+    {
+        $this->acceptedFileTypes = $types;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string> | null
+     */
+    public function getAcceptedFileTypes(): ?array
+    {
+        $types = $this->evaluate($this->acceptedFileTypes);
+
+        if ($types instanceof Arrayable) {
+            $types = $types->toArray();
+        }
+
+        return $types;
+    }
+
+    public function maxSize(int | Closure | null $size): static
+    {
+        $this->maxSize = $size;
+
+        return $this;
+    }
+
+    public function getMaxSize(): ?int
+    {
+        return $this->evaluate($this->maxSize);
     }
 }
