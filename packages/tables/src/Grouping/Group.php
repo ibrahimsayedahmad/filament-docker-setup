@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class Group extends Component
@@ -45,6 +46,8 @@ class Group extends Component
     protected bool $isTitlePrefixedWithLabel = true;
 
     protected bool $isDate = false;
+
+    protected bool | Closure $isHtml = false;
 
     protected string $evaluationIdentifier = 'group';
 
@@ -78,6 +81,13 @@ class Group extends Component
     public function date(bool $condition = true): static
     {
         $this->isDate = $condition;
+
+        return $this;
+    }
+
+    public function html(bool | Closure $condition = true): static
+    {
+        $this->isHtml = $condition;
 
         return $this;
     }
@@ -275,16 +285,22 @@ class Group extends Component
             $title = $title->getLabel();
         }
 
-        // Ensure the title is either a string or HtmlString for security
-        if (! is_string($title) && ! ($title instanceof HtmlString)) {
+        // Handle HtmlString objects (trusted content)
+        if ($title instanceof HtmlString) {
+            return $title;
+        }
+
+        // Ensure the title is a string for security
+        if (!is_string($title)) {
             throw new InvalidArgumentException(
                 'Group title must be a string or HtmlString instance. ' .
                 'Use Illuminate\Support\HtmlString for HTML content.'
             );
         }
 
-        if ($title instanceof HtmlString) {
-            return $title;
+        // Apply HTML sanitization if html() method was called
+        if ($this->isHtml()) {
+            $title = Str::sanitizeHtml($title);
         }
 
         if (filled($title) && $this->isDate()) {
@@ -295,7 +311,8 @@ class Group extends Component
             $title = $title->translatedFormat($this->getTable()->getDefaultDateDisplayFormat());
         }
 
-        return $title;
+        // Return HtmlString if html() was enabled, otherwise return string
+        return $this->isHtml() ? new HtmlString($title) : $title;
     }
 
     public function groupQuery(Builder $query, Model $model): Builder
@@ -470,6 +487,11 @@ class Group extends Component
     public function isDate(): bool
     {
         return $this->isDate;
+    }
+
+    public function isHtml(): bool
+    {
+        return (bool) $this->evaluate($this->isHtml);
     }
 
     public function applyEagerLoading(EloquentBuilder $query): EloquentBuilder
