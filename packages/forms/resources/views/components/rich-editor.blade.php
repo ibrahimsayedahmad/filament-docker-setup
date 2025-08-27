@@ -19,7 +19,6 @@
         x-cloak
         :attributes="
             \Filament\Support\prepare_inherited_attributes($extraAttributeBag)
-                ->merge($getExtraInputAttributes())
                 ->class(['fi-fo-rich-editor'])
         "
     >
@@ -67,7 +66,7 @@
                 </div>
             @endif
 
-            <div class="fi-fo-rich-editor-main">
+            <div {{ $getExtraInputAttributeBag()->class(['fi-fo-rich-editor-main']) }}>
                 <div class="fi-fo-rich-editor-content fi-prose" x-ref="editor">
                     @foreach ($floatingToolbars as $nodeName => $buttons)
                         <div
