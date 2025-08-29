@@ -33,7 +33,9 @@
     }
 
     if (! $size instanceof Size) {
-        $size = filled($size) ? (Size::tryFrom($size) ?? $size) : null;
+
+        $sizeValue = $size instanceof \BackedEnum ? $size->value : $size;
+        $size = filled($sizeValue) ? (Size::tryFrom($sizeValue) ?? $sizeValue) : null;
     }
 
     if (filled($iconSize) && (! $iconSize instanceof IconSize)) {
