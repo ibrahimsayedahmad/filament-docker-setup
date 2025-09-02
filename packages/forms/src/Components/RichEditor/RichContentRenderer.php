@@ -360,14 +360,9 @@ class RichContentRenderer implements Htmlable
         }
 
         $editor = $this->getEditor();
-
-        if ($decoded) {
-            return json_decode($editor->getJSON(), true);
-        }
-
         $this->processMergeTags($editor);
 
-        return $editor->getJSON();
+        return $decoded ? json_decode($editor->getJSON(), true) : $editor->getJSON();
     }
 
     /**
