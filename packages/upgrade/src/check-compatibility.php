@@ -180,6 +180,22 @@ foreach ($plugins as $plugin) {
             }
         }
 
+        // If still unknown and we couldn't fetch any versions from Packagist, but the package exists locally in vendor,
+        // assume it's a private/non-Packagist package and do not block the upgrade.
+        if ($compatibility === null) {
+            $stableEmpty = empty($GLOBALS['FILAMENT_UPGRADE_PACKAGIST']['versions'][$plugin]['stable'] ?? []);
+            $devEmpty = empty($GLOBALS['FILAMENT_UPGRADE_PACKAGIST']['versions'][$plugin]['dev'] ?? []);
+            $isInstalledLocally = file_exists("vendor/{$plugin}/composer.json");
+
+            if ($stableEmpty && $devEmpty && $isInstalledLocally) {
+                // Mark as compatible (unknown) to avoid blocking; we cache this decision.
+                $compatibility = [
+                    'version' => 'unknown',
+                    'isPrerelease' => false,
+                ];
+            }
+        }
+
         if (! array_key_exists($plugin, $GLOBALS['FILAMENT_UPGRADE_PACKAGIST']['compatibility'])) {
             $GLOBALS['FILAMENT_UPGRADE_PACKAGIST']['compatibility'][$plugin] = $compatibility;
         }

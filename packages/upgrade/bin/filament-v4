@@ -274,6 +274,11 @@ try {
             $version = ltrim($compatibility['version'], 'v');
             $isPrerelease = $compatibility['isPrerelease'];
 
+            if ($version === 'unknown') {
+                // Skip suggesting install command for plugins with unknown version (e.g., private/non-Packagist)
+                continue;
+            }
+
             $constraint = null;
             if (! $isPrerelease) {
                 // Prefer using major.minor for pre-v1 packages to avoid ^0.0 or ~0.0
