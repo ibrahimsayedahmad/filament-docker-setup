@@ -250,8 +250,8 @@ use function Pest\Livewire\livewire;
 test('comments section has heading', function () {
     livewire(EditPost::class)
         ->assertSchemaComponentExists(
-            'comments-section',
-            function (Component $component): bool {
+            key: 'comments-section',
+            checkComponentUsing: function (Component $component): bool {
                 return $component->getHeading() === 'Comments';
             },
         );
@@ -269,8 +269,8 @@ use function Pest\Livewire\livewire;
 test('comments section is enabled', function () {
     livewire(EditPost::class)
         ->assertSchemaComponentExists(
-            'comments-section',
-            function (Component $component): bool {
+            key: 'comments-section',
+            checkComponentUsing: function (Component $component): bool {
                 Assert::assertTrue(
                     $component->isEnabled(),
                     'Failed asserting that comments-section is enabled.',
