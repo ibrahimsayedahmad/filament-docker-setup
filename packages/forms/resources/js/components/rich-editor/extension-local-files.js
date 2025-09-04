@@ -119,22 +119,6 @@ const LocalFilesPlugin = ({
                         }),
                     )
 
-                    const fileReader = new FileReader()
-
-                    fileReader.readAsDataURL(file)
-                    fileReader.onload = () => {
-                        editor
-                            .chain()
-                            .insertContentAt(position?.pos ?? 0, {
-                                type: 'image',
-                                attrs: {
-                                    class: 'fi-loading',
-                                    src: fileReader.result,
-                                },
-                            })
-                            .run()
-                    }
-
                     let fileKey = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
                         /[018]/g,
                         (c) =>
@@ -156,10 +140,12 @@ const LocalFilesPlugin = ({
 
                                 editor
                                     .chain()
-                                    .updateAttributes('image', {
-                                        class: null,
-                                        id: fileKey,
-                                        src: url,
+                                    .insertContentAt(position?.pos ?? 0, {
+                                        type: 'image',
+                                        attrs: {
+                                            id: fileKey,
+                                            src: url,
+                                        },
                                     })
                                     .run()
 
@@ -195,9 +181,19 @@ const LocalFilesPlugin = ({
                     return false
                 }
 
+<<<<<<< HEAD
                 const allFiles = Array.from(event.clipboardData.files)
                 const validFiles = []
                 const rejectedFiles = []
+=======
+                if (event.clipboardData?.getData('text').length) {
+                    return false
+                }
+
+                const files = Array.from(event.clipboardData.files).filter(
+                    (file) => allowedMimeTypes.includes(file.type),
+                )
+>>>>>>> 4.x
 
                 allFiles.forEach(file => {
                     const validation = validateFile(file, effectiveAllowedMimeTypes, effectiveMaxFileSize, invalidMimeTypeMessage, fileSizeExceededMessage)
@@ -244,22 +240,6 @@ const LocalFilesPlugin = ({
                         }),
                     )
 
-                    const fileReader = new FileReader()
-
-                    fileReader.readAsDataURL(file)
-                    fileReader.onload = () => {
-                        editor
-                            .chain()
-                            .insertContentAt(editor.state.selection.anchor, {
-                                type: 'image',
-                                attrs: {
-                                    class: 'fi-loading',
-                                    src: fileReader.result,
-                                },
-                            })
-                            .run()
-                    }
-
                     let fileKey = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
                         /[018]/g,
                         (c) =>
@@ -281,11 +261,16 @@ const LocalFilesPlugin = ({
 
                                 editor
                                     .chain()
-                                    .updateAttributes('image', {
-                                        class: null,
-                                        id: fileKey,
-                                        src: url,
-                                    })
+                                    .insertContentAt(
+                                        editor.state.selection.anchor,
+                                        {
+                                            type: 'image',
+                                            attrs: {
+                                                id: fileKey,
+                                                src: url,
+                                            },
+                                        },
+                                    )
                                     .run()
 
                                 editor.setEditable(true)
@@ -332,6 +317,18 @@ export default Extension.create({
             maxFileSize: defaultMaxFileSize,
             fileSizeExceededMessage: defaultFileSizeExceededMessage,
             invalidMimeTypeMessage: defaultInvalidMimeTypeMessage,
+                const allFiles = Array.from(event.clipboardData.files)
+                const validFiles = []
+                const rejectedFiles = []
+
+                allFiles.forEach(file => {
+                    const validation = validateFile(file, effectiveAllowedMimeTypes, effectiveMaxFileSize, invalidMimeTypeMessage, fileSizeExceededMessage)
+                    if (validation.isValid) {
+                        validFiles.push(file)
+                    } else {
+                        rejectedFiles.push({ file, errors: validation.errors })
+                    }
+                })
         }
     },
 
