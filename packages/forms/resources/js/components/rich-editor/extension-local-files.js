@@ -69,22 +69,6 @@ const LocalFilesPlugin = ({
                         }),
                     )
 
-                    const fileReader = new FileReader()
-
-                    fileReader.readAsDataURL(file)
-                    fileReader.onload = () => {
-                        editor
-                            .chain()
-                            .insertContentAt(position?.pos ?? 0, {
-                                type: 'image',
-                                attrs: {
-                                    class: 'fi-loading',
-                                    src: fileReader.result,
-                                },
-                            })
-                            .run()
-                    }
-
                     let fileKey = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
                         /[018]/g,
                         (c) =>
@@ -106,16 +90,13 @@ const LocalFilesPlugin = ({
 
                                 editor
                                     .chain()
-                                    .insertContentAt(
-                                        { from: position?.pos ?? 0, to: (position?.pos ?? 0) + 1 },
-                                        {
-                                            type: 'image',
-                                            attrs: {
-                                                id: fileKey,
-                                                src: url,
-                                            },
+                                    .insertContentAt(position?.pos ?? 0, {
+                                        type: 'image',
+                                        attrs: {
+                                            id: fileKey,
+                                            src: url,
                                         },
-                                    )
+                                    })
                                     .run()
 
                                 editor.setEditable(true)
@@ -181,22 +162,6 @@ const LocalFilesPlugin = ({
                         }),
                     )
 
-                    const fileReader = new FileReader()
-
-                    fileReader.readAsDataURL(file)
-                    fileReader.onload = () => {
-                        editor
-                            .chain()
-                            .insertContentAt(editor.state.selection.anchor, {
-                                type: 'image',
-                                attrs: {
-                                    class: 'fi-loading',
-                                    src: fileReader.result,
-                                },
-                            })
-                            .run()
-                    }
-
                     let fileKey = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(
                         /[018]/g,
                         (c) =>
@@ -219,7 +184,7 @@ const LocalFilesPlugin = ({
                                 editor
                                     .chain()
                                     .insertContentAt(
-                                        { from: editor.state.selection.anchor - 1, to: editor.state.selection.anchor },
+                                        editor.state.selection.anchor,
                                         {
                                             type: 'image',
                                             attrs: {
