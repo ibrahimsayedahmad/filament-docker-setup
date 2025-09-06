@@ -145,6 +145,13 @@ trait CanGenerateModelInfolists
                 }
             }
 
+            if ($componentName === 'deleted_at') {
+                $componentData['visible'] = [new Literal('fn (' . class_basename($model) . ' $record): bool => $record->trashed()')];
+                $this->namespace->addUse($model);
+            } elseif ($column['nullable']) {
+                $componentData['placeholder'] = ['-'];
+            }
+
             $this->importUnlessPartial($componentData['type']);
 
             $components[$componentName] = $componentData;
