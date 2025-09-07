@@ -586,27 +586,29 @@ class MakePageCommand extends Command
                 );
             };
 
-            if (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_SCHEMAS)) {
-                $formSchemaFqn = $this->askForSchema(
-                    intialQuestion: 'Should an existing form schema class be used?',
-                    question: 'Which form schema class would you like to use?',
-                    questionPlaceholder: app()->getNamespace() . 'Filament\\Resources\\Users\\Schemas\\UserForm',
-                );
-            }
-
-            if (blank($formSchemaFqn)) {
-                $askForIsGeneratedIfNotAlready()
-                    ? $askForRelatedModelFqnIfNotAlready()
-                    : $askForRecordTitleAttributeIfNotAlready();
-            }
-
             if (confirm(
                 'Would you like to generate a read-only view modal for the table?',
                 default: false,
             )) {
                 $hasViewOperation = true;
+            }
 
+            $askForIsGeneratedIfNotAlready();
+
+            if ($isGenerated) {
+                $askForRelatedModelFqnIfNotAlready();
+            }
+
+            if (! $isGenerated) {
                 if (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_SCHEMAS)) {
+                    $formSchemaFqn = $this->askForSchema(
+                        intialQuestion: 'Should an existing form schema class be used?',
+                        question: 'Which form schema class would you like to use?',
+                        questionPlaceholder: app()->getNamespace() . 'Filament\\Resources\\Users\\Schemas\\UserForm',
+                    );
+                }
+
+                if ($hasViewOperation && (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_SCHEMAS))) {
                     $infolistSchemaFqn = $this->askForSchema(
                         intialQuestion: 'Would you like to use an existing infolist schema class?',
                         question: 'Which infolist schema class would you like to use?',
@@ -614,29 +616,25 @@ class MakePageCommand extends Command
                     );
                 }
 
-                if (blank($infolistSchemaFqn)) {
-                    $askForRecordTitleAttributeIfNotAlready();
+                if (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES)) {
+                    $tableFqn = $this->askForSchema(
+                        intialQuestion: 'Would you like to use an existing table class?',
+                        question: 'Which table class would you like to use?',
+                        questionPlaceholder: app()->getNamespace() . 'Filament\\Resources\\Users\\Tables\\UsersTable',
+                    );
                 }
             }
 
-            if ($this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES)) {
-                $askForIsGeneratedIfNotAlready()
-                    ? $askForRelatedModelFqnIfNotAlready()
-                    : $askForRecordTitleAttributeIfNotAlready();
-            } else {
-                $tableFqn = $this->askForSchema(
-                    intialQuestion: 'Would you like to use an existing table class?',
-                    question: 'Which table class would you like to use?',
-                    questionPlaceholder: app()->getNamespace() . 'Filament\\Resources\\Users\\Tables\\UsersTable',
-                );
+            if (blank($formSchemaFqn) && (! $isGenerated)) {
+                $askForRecordTitleAttributeIfNotAlready();
+            }
+
+            if ($hasViewOperation && blank($infolistSchemaFqn) && (! $isGenerated)) {
+                $askForRecordTitleAttributeIfNotAlready();
             }
 
             if (blank($tableFqn)) {
                 $askForRecordTitleAttributeIfNotAlready();
-
-                $askForIsGeneratedIfNotAlready(
-                    question: 'Should the table columns be generated from the current database columns?',
-                ) && $askForRelatedModelFqnIfNotAlready();
 
                 $isSoftDeletable = (filled($relatedModelFqn) && static::$shouldCheckModelsForSoftDeletes && class_exists($relatedModelFqn))
                     ? in_array(SoftDeletes::class, class_uses_recursive($relatedModelFqn))

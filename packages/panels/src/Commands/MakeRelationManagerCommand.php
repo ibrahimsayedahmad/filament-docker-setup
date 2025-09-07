@@ -247,46 +247,34 @@ class MakeRelationManagerCommand extends Command
             if (blank($this->relatedResourceFqn)) {
                 $this->configureHasViewOperation();
 
-                $this->configureFormSchemaFqn();
+                $this->configureIsGeneratedIfNotAlready();
 
-                if ($this->hasViewOperation) {
-                    $this->configureInfolistSchemaFqn();
+                if ($this->isGenerated) {
+                    $this->configureRelatedModelFqnIfNotAlready();
                 }
 
-                if (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES)) {
-                    $this->configureTableFqn();
+                if (! $this->isGenerated) {
+                    $this->configureFormSchemaFqn();
+
+                    if ($this->hasViewOperation) {
+                        $this->configureInfolistSchemaFqn();
+                    }
+
+                    if (! $this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES)) {
+                        $this->configureTableFqn();
+                    }
                 }
 
-                if (blank($this->formSchemaFqn)) {
-                    $this->configureIsGeneratedIfNotAlready();
-
-                    $this->isGenerated
-                        ? $this->configureRelatedModelFqnIfNotAlready()
-                        : $this->configureRecordTitleAttributeIfNotAlready();
-                }
-
-                if ($this->hasViewOperation && blank($this->infolistSchemaFqn)) {
+                if (blank($this->formSchemaFqn) && (! $this->isGenerated)) {
                     $this->configureRecordTitleAttributeIfNotAlready();
                 }
 
-                if ($this->hasFileGenerationFlag(FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES)) {
-                    $this->configureIsGeneratedIfNotAlready();
-
-                    $this->isGenerated
-                        ? $this->configureRelatedModelFqnIfNotAlready()
-                        : $this->configureRecordTitleAttributeIfNotAlready();
+                if ($this->hasViewOperation && blank($this->infolistSchemaFqn) && (! $this->isGenerated)) {
+                    $this->configureRecordTitleAttributeIfNotAlready();
                 }
 
                 if (blank($this->tableFqn)) {
                     $this->configureRecordTitleAttributeIfNotAlready();
-
-                    $this->configureIsGeneratedIfNotAlready(
-                        question: 'Should the table columns be generated from the current database columns?',
-                    );
-
-                    if ($this->isGenerated) {
-                        $this->configureRelatedModelFqnIfNotAlready();
-                    }
 
                     $this->configureIsSoftDeletable();
 
