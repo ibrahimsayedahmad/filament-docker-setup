@@ -32,6 +32,13 @@ class ImageExtension extends BaseImage
                 'parseHTML' => fn ($DOMNode) => $DOMNode->getAttribute('data-id') ?: null,
                 'renderHTML' => fn ($attributes) => ['data-id' => $attributes->id ?? null],
             ],
+            'loading' => [
+                'default' => null,
+                'parseHTML' => fn ($DOMNode) => $DOMNode->getAttribute('loading') ?: null,
+                'renderHTML' => fn ($attributes) => [
+                    'loading' => $attributes->loading ?? null,
+                ],
+            ],
         ];
     }
 }
