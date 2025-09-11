@@ -292,8 +292,6 @@ trait CanExportRecords
             );
         });
 
-        $this->successNotificationTitle(__('filament-actions::export.notifications.started.title'));
-
         $this->defaultColor('gray');
 
         $this->modalWidth(static fn (ExportAction | ExportBulkAction $action): Width => match ($action->getColumnMappingColumns()) {
@@ -302,6 +300,8 @@ trait CanExportRecords
             3 => Width::FiveExtraLarge,
             default => Width::SevenExtraLarge,
         });
+
+        $this->successNotificationTitle(__('filament-actions::export.notifications.started.title'));
 
         if (! $this instanceof ExportBulkAction) {
             $this->model(fn (ExportAction $action): string => $action->getExporter()::getModel());
