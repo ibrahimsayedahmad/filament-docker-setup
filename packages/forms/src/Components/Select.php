@@ -133,20 +133,6 @@ class Select extends Field implements Contracts\CanDisableOptions, Contracts\Has
     {
         parent::setUp();
 
-        $this->default(static fn (Select $component): ?array => $component->isMultiple() ? [] : null);
-
-        $this->afterStateHydrated(static function (Select $component, $state): void {
-            if (! $component->isMultiple()) {
-                return;
-            }
-
-            if (is_array($state)) {
-                return;
-            }
-
-            $component->state([]);
-        });
-
         $this->transformOptionsForJsUsing(static function (Select $component, array $options): array {
             return collect($options)
                 ->map(fn ($label, $value): array => is_array($label)
