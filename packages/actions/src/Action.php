@@ -474,8 +474,8 @@ class Action extends ViewComponent implements Arrayable
             || (! $record instanceof Model)
             || blank($table->getModel())
             || ($record::class === $table->getModel())
-        )) {
-            $context['recordKey'] = $this->resolveRecordKey($record);
+        ) && filled($recordKey = $this->resolveRecordKey($record))) {
+            $context['recordKey'] = $recordKey;
         }
 
         if ($table && $this->isBulk()) {
