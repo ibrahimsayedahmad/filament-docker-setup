@@ -38,7 +38,6 @@ input.fi-input {
 }
 
 input[type='range'].fi-input {
-    margin-inline: auto;
-    width: 98%;
-    appearance: auto;
+    @apply mx-auto appearance-auto;
+    width: calc(100% - 1.5rem);
 }
