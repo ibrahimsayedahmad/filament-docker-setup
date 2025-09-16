@@ -799,8 +799,8 @@ class Select extends Field implements Contracts\CanDisableOptions, Contracts\Has
             if (empty($relationshipQuery->getQuery()->orders)) {
                 $relationshipOrderByAttribute = $relationshipTitleAttribute;
 
-                if (str_contains($relationshipTitleAttribute, ' as ')) {
-                    $relationshipOrderByAttribute = substr($relationshipTitleAttribute, 0, strpos($relationshipTitleAttribute, ' as '));
+                if (str_contains($relationshipOrderByAttribute, ' as ')) {
+                    $relationshipOrderByAttribute = (string) str($relationshipOrderByAttribute)->before(' as ');
                 }
 
                 $relationshipQuery->orderBy($relationshipQuery->qualifyColumn($relationshipOrderByAttribute));
@@ -863,8 +863,8 @@ class Select extends Field implements Contracts\CanDisableOptions, Contracts\Has
             if (empty($relationshipQuery->getQuery()->orders)) {
                 $relationshipOrderByAttribute = $relationshipTitleAttribute;
 
-                if (str_contains($relationshipTitleAttribute, ' as ')) {
-                    $relationshipOrderByAttribute = substr($relationshipTitleAttribute, 0, strpos($relationshipTitleAttribute, ' as '));
+                if (str_contains($relationshipOrderByAttribute, ' as ')) {
+                    $relationshipOrderByAttribute = (string) str($relationshipOrderByAttribute)->before(' as ');
                 }
 
                 $relationshipQuery->orderBy($relationshipQuery->qualifyColumn($relationshipOrderByAttribute));
