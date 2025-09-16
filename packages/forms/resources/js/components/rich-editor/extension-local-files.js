@@ -19,11 +19,11 @@ const validateFiles = ({
     maxSizeValidationMessage,
 }) => {
     for (const file of files) {
-        if (acceptedTypes && acceptedTypesValidationMessage && (!acceptedTypes.includes(file.type))) {
+        if (acceptedTypes && !acceptedTypes.includes(file.type)) {
             return acceptedTypesValidationMessage
         }
 
-        if (maxSize && maxSizeValidationMessage && (file.size > ((+maxSize) * 1024))) {
+        if (maxSize && file.size > +maxSize * 1024) {
             return maxSizeValidationMessage
         }
     }
