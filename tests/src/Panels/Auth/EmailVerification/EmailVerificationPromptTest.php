@@ -80,7 +80,7 @@ it('can throttle resend notification attempts', function (): void {
     Notification::assertSentToTimes($userToVerify, VerifyEmail::class, times: 2);
 });
 
-it('redirects guests to the panel login route when unauthenticated', function (): void {
+it('redirects guests to the panel when unauthenticated', function (): void {
     $this->withoutMiddleware(Authenticate::class);
 
     $panel = Filament::getCurrentOrDefaultPanel();
