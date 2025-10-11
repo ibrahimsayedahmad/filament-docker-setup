@@ -6,6 +6,7 @@ use Closure;
 use Filament\Support\Components\Contracts\HasEmbeddedView;
 use Filament\Support\Concerns\CanBeCopied;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Js;
 use Phiki\Grammar\Grammar;
 use Phiki\Phiki;
@@ -60,6 +61,10 @@ class CodeEntry extends Entry implements HasEmbeddedView
     public function toEmbeddedHtml(): string
     {
         $state = $this->getState();
+
+        if ($state instanceof Collection) {
+            $state = $state->all();
+        }
 
         $attributes = $this->getExtraAttributeBag()
             ->class([
