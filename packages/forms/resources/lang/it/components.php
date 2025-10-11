@@ -567,7 +567,6 @@ return [
 
         'file_attachments_max_size_message' => 'I file caricati non devono superare i :max kilobyte.',
 
-
         'tools' => [
             'align_center' => 'Allinea al centro',
             'align_end' => 'Allinea alla fine',
