@@ -2,24 +2,24 @@
 
 namespace Filament\Tests\Fixtures\Models;
 
-use Filament\Tests\Database\Factories\TeamFactory;
+use Filament\Tests\Database\Factories\ImageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Team extends Model
+class Image extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function company(): BelongsTo
+    public function imageable(): MorphTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->morphTo();
     }
 
     protected static function newFactory()
     {
-        return TeamFactory::new();
+        return ImageFactory::new();
     }
 }
