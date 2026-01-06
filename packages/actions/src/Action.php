@@ -310,7 +310,7 @@ class Action extends ViewComponent implements Arrayable
         return $this;
     }
 
-    public function jsAction(string | Closure | null $action): static
+    public function actionJs(string | Closure | null $action): static
     {
         $this->alpineClickHandler($action);
 
