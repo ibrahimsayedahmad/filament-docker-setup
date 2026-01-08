@@ -109,6 +109,7 @@ class MorphToSelect extends Component
                 ->searchDebounce($component->getSearchDebounce())
                 ->searchPrompt($component->getSearchPrompt())
                 ->searchingMessage($component->getSearchingMessage())
+                ->noOptionsMessage($component->getNoOptionsMessage())
                 ->noSearchResultsMessage($component->getNoSearchResultsMessage())
                 ->loadingMessage($component->getLoadingMessage())
                 ->allowHtml($component->isHtmlAllowed())
