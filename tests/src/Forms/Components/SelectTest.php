@@ -1041,7 +1041,7 @@ it('can select an option from a `native(false)` select dropdown in the browser',
         ->assertDontSee('One')
         ->assertDontSee('Two')
         ->click('[data-testid="single-select"] .fi-select-input-btn')
-        ->waitForText('One')
+        ->assertSee('One')
         ->assertSee('Two')
         ->click('Two')
         ->assertDontSee('One')
@@ -1062,7 +1062,7 @@ it('can select multiple options from a `multiple()` select dropdown in the brows
         ->assertDontSee('Apple')
         ->assertDontSee('Cherry')
         ->click('[data-testid="multiple-select"] .fi-select-input-btn')
-        ->waitForText('Apple')
+        ->assertSee('Apple')
         ->click('Apple')
         ->click('Cherry')
         ->keys('[data-testid="multiple-select"] .fi-select-input-btn', 'Escape')
@@ -1078,7 +1078,7 @@ it('can navigate options using keyboard in a `native(false)` select dropdown in 
         ->assertSee('Single Select')
         ->assertDontSee('Two')
         ->click('[data-testid="single-select"] .fi-select-input-btn')
-        ->waitForText('One')
+        ->assertSee('One')
         ->keys('[data-testid="single-select"] .fi-select-input-option.fi-selected', ['ArrowDown', 'Enter'])
         ->assertDontSee('One')
         ->assertSee('Two')
@@ -1092,10 +1092,10 @@ it('can search and select an option in a `searchable()` select dropdown in the b
         ->assertSee('Searchable Select')
         ->assertDontSee('Purple')
         ->click('[data-testid="searchable-select"] .fi-select-input-btn')
-        ->waitForText('Red')
+        ->assertSee('Red')
         ->assertSee('Purple')
         ->type('[data-testid="searchable-select"] .fi-select-input-search-ctn input', 'pur')
-        ->waitForText('Purple')
+        ->assertSee('Purple')
         ->assertDontSee('Red')
         ->click('Purple')
         ->assertSee('Purple')
@@ -1109,7 +1109,7 @@ it('can clear a selected value in a `native(false)` select dropdown in the brows
         ->assertSee('Clearable Select')
         ->assertDontSee('Active')
         ->click('[data-testid="clearable-select"] .fi-select-input-btn')
-        ->waitForText('Active')
+        ->assertSee('Active')
         ->click('Active')
         ->assertSee('Active')
         ->click('[data-testid="clearable-select"] .fi-select-input-value-remove-btn')
@@ -1125,7 +1125,7 @@ it('can remove individual items from a `multiple()` select dropdown in the brows
         ->assertDontSee('Apple')
         ->assertDontSee('Banana')
         ->click('[data-testid="multiple-select"] .fi-select-input-btn')
-        ->waitForText('Apple')
+        ->assertSee('Apple')
         ->click('Apple')
         ->click('Banana')
         ->keys('[data-testid="multiple-select"] .fi-select-input-btn', 'Escape')
@@ -1143,7 +1143,7 @@ it('shows "no options" message when dynamic options returns empty array', functi
     visit('/select-test')
         ->assertSee('Dynamic Empty Options')
         ->click('[data-testid="dynamic-empty-options-select"] .fi-select-input-btn')
-        ->waitForText('No options available')
+        ->assertSee('No options available')
         ->assertSee('No options available')
         ->assertDontSee('Loading')
         ->assertNoSmoke();
@@ -1155,7 +1155,7 @@ it('shows options when dynamic options returns options', function (): void {
     visit('/select-test')
         ->assertSee('Dynamic With Options')
         ->click('[data-testid="dynamic-with-options-select"] .fi-select-input-btn')
-        ->waitForText('Option 1')
+        ->assertSee('Option 1')
         ->assertSee('Option 1')
         ->assertSee('Option 2')
         ->assertDontSee('No options available')
@@ -1169,7 +1169,7 @@ it('shows "no options" message when dynamic options and search returns empty arr
     visit('/select-test')
         ->assertSee('Dynamic Options And Search Empty')
         ->click('[data-testid="dynamic-options-and-search-empty-select"] .fi-select-input-btn')
-        ->waitForText('No options available')
+        ->assertSee('No options available')
         ->assertSee('No options available')
         ->assertDontSee('Loading')
         ->assertNoSmoke();
@@ -1181,7 +1181,7 @@ it('shows "no options" message when static options is empty array', function ():
     visit('/select-test')
         ->assertSee('Static Empty Options')
         ->click('[data-testid="static-empty-options-select"] .fi-select-input-btn')
-        ->waitForText('No options available')
+        ->assertSee('No options available')
         ->assertSee('No options available')
         ->assertNoSmoke();
 });
@@ -1192,11 +1192,82 @@ it('shows options when dynamic options returns non-empty array', function (): vo
     visit('/select-test')
         ->assertSee('Dynamic Options With Results')
         ->click('[data-testid="dynamic-options-with-results-select"] .fi-select-input-btn')
-        ->waitForText('Dynamic Option 1')
+        ->assertSee('Dynamic Option 1')
         ->assertSee('Dynamic Option 1')
         ->assertSee('Dynamic Option 2')
         ->assertDontSee('No options available')
         ->assertDontSee('Loading')
+        ->assertNoSmoke();
+});
+
+it('only adds one remove button when selecting multiple options in sequence', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    visit('/select-test')
+        ->assertSee('Clearable With Placeholder')
+        // Verify no remove button initially (placeholder shown)
+        ->assertMissing('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        // Select first option
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-btn')
+        ->assertSee('First')
+        ->click('First')
+        // Verify exactly one remove button exists
+        ->assertVisible('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        ->assertScript('document.querySelectorAll(\'[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn\').length', 1)
+        // Select second option
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-btn')
+        ->assertSee('Second')
+        ->click('Second')
+        // Verify still exactly one remove button exists (not duplicated)
+        ->assertVisible('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        ->assertScript('document.querySelectorAll(\'[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn\').length', 1)
+        // Select third option
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-btn')
+        ->assertSee('Third')
+        ->click('Third')
+        // Verify still exactly one remove button exists
+        ->assertScript('document.querySelectorAll(\'[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn\').length', 1)
+        ->assertNoSmoke();
+});
+
+it('removes the clear button when selection is cleared', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    visit('/select-test')
+        ->assertSee('Clearable With Placeholder')
+        // Verify no remove button initially
+        ->assertMissing('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        // Select an option
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-btn')
+        ->assertSee('First')
+        ->click('First')
+        // Verify remove button exists
+        ->assertVisible('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        // Clear the selection
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        // Verify remove button is gone and placeholder is shown
+        ->assertMissing('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        ->assertSee('Select an option...')
+        ->assertNoSmoke();
+});
+
+it('adds clearable class only when an option is selected', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    visit('/select-test')
+        ->assertSee('Clearable With Placeholder')
+        // Verify no clearable class initially
+        ->assertMissing('[data-testid="clearable-with-placeholder-select"] .fi-select-input-ctn-clearable')
+        // Select an option
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-btn')
+        ->assertSee('First')
+        ->click('First')
+        // Verify clearable class is added
+        ->assertVisible('[data-testid="clearable-with-placeholder-select"] .fi-select-input-ctn-clearable')
+        // Clear the selection
+        ->click('[data-testid="clearable-with-placeholder-select"] .fi-select-input-value-remove-btn')
+        // Verify clearable class is removed
+        ->assertMissing('[data-testid="clearable-with-placeholder-select"] .fi-select-input-ctn-clearable')
         ->assertNoSmoke();
 });
 
