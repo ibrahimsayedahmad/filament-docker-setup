@@ -79,7 +79,7 @@ return [
 
         'no_columns' => [
             'title' => 'Nessuna colonna selezionata',
-            'body' => 'Per favore seleziona almeno una colonna da esportare.',
+            'body' => 'Seleziona almeno una colonna per esportare.',
         ],
 
         'started' => [
