@@ -129,7 +129,7 @@ export default function fileUploadFormComponent({
                         document.dispatchEvent(new Event('visibilitychange'))
                     }
                 })
-                
+
                 this.visibilityObserver.observe(this.$el)
             }
 
