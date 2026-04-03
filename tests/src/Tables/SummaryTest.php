@@ -7,10 +7,10 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tests\Fixtures\Livewire\PostsTable;
+use Filament\Tests\Fixtures\Livewire\PostsTableWithCursorPagination;
 use Filament\Tests\Fixtures\Models\Post;
 use Filament\Tests\Tables\TestCase;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Query\Builder;
 use Livewire\Component;
 
 use function Filament\Tests\livewire;
@@ -167,6 +167,46 @@ it('renders group summaries when page and all-table summaries are disabled', fun
     livewire(TestTableWithGroupSummariesOnly::class)
         ->assertSeeHtml('fi-ta-summary-row')
         ->assertDontSeeHtml('fi-ta-summary-header-row');
+});
+
+it('renders the trailing group summary when the next page starts a different group', function (): void {
+    Post::factory()->count(10)->create(['title' => 'A']);
+    Post::factory()->create(['title' => 'B']);
+
+    livewire(PostsTable::class)
+        ->set('tableRecordsPerPage', 10)
+        ->set('tableGrouping', 'title')
+        ->assertSee('A summary')
+        ->assertDontSee('B summary');
+});
+
+it('does not render the trailing group summary when the next page continues the same group', function (): void {
+    Post::factory()->count(15)->create(['title' => 'A']);
+
+    livewire(PostsTable::class)
+        ->set('tableRecordsPerPage', 10)
+        ->set('tableGrouping', 'title')
+        ->assertDontSee('A summary');
+});
+
+it('renders the trailing group summary with cursor pagination when the next page starts a different group', function (): void {
+    Post::factory()->count(10)->create(['title' => 'A']);
+    Post::factory()->create(['title' => 'B']);
+
+    livewire(PostsTableWithCursorPagination::class)
+        ->set('tableRecordsPerPage', 10)
+        ->set('tableGrouping', 'title')
+        ->assertSee('A summary')
+        ->assertDontSee('B summary');
+});
+
+it('does not render the trailing group summary with cursor pagination when the next page continues the same group', function (): void {
+    Post::factory()->count(15)->create(['title' => 'A']);
+
+    livewire(PostsTableWithCursorPagination::class)
+        ->set('tableRecordsPerPage', 10)
+        ->set('tableGrouping', 'title')
+        ->assertDontSee('A summary');
 });
 
 class TestTableWithGroupSummariesOnly extends Component implements HasActions, HasSchemas, Tables\Contracts\HasTable

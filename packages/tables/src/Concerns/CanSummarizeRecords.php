@@ -4,13 +4,68 @@ namespace Filament\Tables\Concerns;
 
 use Closure;
 use Filament\Support\Services\RelationshipJoiner;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Str;
 use stdClass;
 
 trait CanSummarizeRecords
 {
+    /**
+     * @param  Model | array<string, mixed> | null  $lastRecord
+     */
+    public function shouldRenderTrailingGroupedTableSummary(Model | array | null $lastRecord): bool
+    {
+        if ($lastRecord === null) {
+            return false;
+        }
+
+        $records = $this->getTableRecords();
+
+        $isPaginated = ($records instanceof Paginator) || ($records instanceof CursorPaginator);
+
+        if ((! $isPaginated) || (! $records->hasMorePages())) {
+            return true;
+        }
+
+        $group = $this->getTableGrouping();
+
+        if (! $group) {
+            return true;
+        }
+
+        $query = $this->getFilteredSortedTableQuery();
+
+        if ($query === null) {
+            return true;
+        }
+
+        if ($records instanceof CursorPaginator) {
+            $nextCursor = $records->nextCursor();
+
+            if (! $nextCursor) {
+                return true;
+            }
+
+            $nextPageFirstRecord = (clone $query)
+                ->cursorPaginate(perPage: 1, cursor: $nextCursor)
+                ->items()[0] ?? null;
+        } else {
+            $nextPageFirstRecord = (clone $query)
+                ->skip($records->currentPage() * $records->perPage())
+                ->first();
+        }
+
+        if ($nextPageFirstRecord === null) {
+            return true;
+        }
+
+        return $group->getStringKey($nextPageFirstRecord) !== $group->getStringKey($lastRecord);
+    }
+
     public function getAllTableSummaryQuery(): ?Builder
     {
         return $this->getFilteredTableQuery();
