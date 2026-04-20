@@ -23,6 +23,8 @@ class RelationGroup extends Component
      */
     protected string | array | Closure | null $badgeColor = null;
 
+    protected bool | Closure $isBadgeDeferred = false;
+
     protected ?Model $ownerRecord = null;
 
     protected ?string $pageClass = null;
@@ -75,6 +77,13 @@ class RelationGroup extends Component
     public function badgeColor(string | array | Closure | null $color): static
     {
         $this->badgeColor = $color;
+
+        return $this;
+    }
+
+    public function deferBadge(bool | Closure $condition = true): static
+    {
+        $this->isBadgeDeferred = $condition;
 
         return $this;
     }
@@ -135,6 +144,11 @@ class RelationGroup extends Component
         return $this->evaluate($this->badgeColor);
     }
 
+    public function isBadgeDeferred(): bool
+    {
+        return (bool) $this->evaluate($this->isBadgeDeferred);
+    }
+
     public function getOwnerRecord(): ?Model
     {
         return $this->ownerRecord;
@@ -176,8 +190,13 @@ class RelationGroup extends Component
 
     public function getTabComponent(): Tab
     {
+        $isTabBadgeDeferred = $this->isBadgeDeferred();
+
         $tab = Tab::make($this->getLabel())
-            ->badge($this->getBadge())
+            ->badge($isTabBadgeDeferred
+                ? fn (): ?string => $this->getBadge()
+                : $this->getBadge())
+            ->deferBadge($isTabBadgeDeferred)
             ->badgeColor($this->getBadgeColor())
             ->badgeTooltip($this->getBadgeTooltip())
             ->icon($this->getIcon())
