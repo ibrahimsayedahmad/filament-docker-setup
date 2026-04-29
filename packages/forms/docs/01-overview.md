@@ -1728,6 +1728,35 @@ Group::make()
 
 In this example, the customer's name is not `required()`, and the email address is only required when the `name` is filled. The `condition` function is used to check whether the `name` field is filled, and if it is, then the customer will be created / updated. Otherwise, the customer will not be created, or will be deleted if it already exists.
 
+#### Using visibility in condition functions
+
+Sometimes you may want to conditionally save relationship data based on whether a component is visible. For example, you might have a section that is only shown when a certain checkbox is checked or when a user has specific permissions. In these cases, you can use the component's `isVisible()` method within the condition:
+
+```php
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+
+Section::make('Customer Details')
+    ->relationship(
+        'customer',
+        condition: fn (Section $component): bool => $component->isVisible(),
+    )
+    ->saveRelationshipsWhenHidden() // ⚠️ Essential
+    ->schema([
+        TextInput::make('name')
+            ->label('Customer Name'),
+        TextInput::make('email')
+            ->label('Email address')
+            ->email()
+            ->requiredWith('name'),
+    ])
+    ->visible(fn (): bool => $showCustomerSection)
+```
+
+> ⚠️ **Important:** When using `condition` with visibility, you must also call `saveRelationshipsWhenHidden()` to ensure data persistence:
+
+Without `saveRelationshipsWhenHidden()`, the relationship data will be lost when the component is hidden. This method preserves the data even when the component isn't visible, allowing the condition to properly manage whether saving should occur.
+
 ## Global settings
 
 If you wish to change the default behavior of a field globally, then you can call the static `configureUsing()` method inside a service provider's `boot()` method or a middleware. Pass a closure which is able to modify the component. For example, if you wish to make all [checkboxes `inline(false)`](checkbox#positioning-the-label-above), you can do it like so:
