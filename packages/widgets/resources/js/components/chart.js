@@ -1,5 +1,16 @@
 import Chart from 'chart.js/auto'
+import { color } from 'chart.js/helpers'
 import 'chartjs-adapter-luxon'
+
+const darken = (value, amount) => {
+    if (Array.isArray(value)) {
+        return value.map((entry) => darken(entry, amount))
+    }
+
+    const parsed = color(value)
+
+    return parsed.valid ? parsed.darken(amount).rgbString() : value
+}
 
 if (
     window.filamentChartJsGlobalPlugins &&
@@ -150,15 +161,15 @@ export default function chart({ cachedData, options, type }) {
             }
 
             for (const dataset of data?.datasets ?? []) {
-                if (dataset.borderColor !== undefined) {
-                    continue
-                }
-
                 if (dataset.backgroundColor === undefined) {
                     continue
                 }
 
-                dataset.borderColor = dataset.backgroundColor
+                dataset.borderColor ??= darken(dataset.backgroundColor, 0.2)
+                dataset.hoverBorderColor ??= darken(
+                    dataset.backgroundColor,
+                    0.3,
+                )
             }
         },
 
