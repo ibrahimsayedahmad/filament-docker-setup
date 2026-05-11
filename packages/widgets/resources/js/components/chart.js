@@ -122,7 +122,6 @@ export default function chart({ cachedData, options, type }) {
 
                 options.elements ??= {}
                 options.elements.arc ??= {}
-                options.elements.arc.borderColor ??= '#ffffff'
 
                 options.plugins ??= {}
                 options.plugins.legend ??= {}
@@ -225,6 +224,12 @@ export default function chart({ cachedData, options, type }) {
             options.elements.bar ??= {}
             options.elements.bar.borderColor = resolvedBorderColor
 
+            if (['doughnut', 'pie', 'polarArea'].includes(type)) {
+                options.elements.arc ??= {}
+                options.elements.arc.borderColor =
+                    this.getSurroundingBackgroundColor()
+            }
+
             options.scales.x.grid.color = this.userXGridColor ?? gridColor
             options.scales.y.grid.color = this.userYGridColor ?? gridColor
 
@@ -254,6 +259,27 @@ export default function chart({ cachedData, options, type }) {
             }
 
             return Chart.getChart(this.$refs.canvas)
+        },
+
+        getSurroundingBackgroundColor() {
+            let element = this.$el.parentElement
+
+            while (element) {
+                const backgroundColor =
+                    getComputedStyle(element).backgroundColor
+
+                if (
+                    backgroundColor &&
+                    backgroundColor !== 'rgba(0, 0, 0, 0)' &&
+                    backgroundColor !== 'transparent'
+                ) {
+                    return backgroundColor
+                }
+
+                element = element.parentElement
+            }
+
+            return '#ffffff'
         },
 
         getChartColors() {
