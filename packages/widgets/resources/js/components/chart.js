@@ -128,9 +128,9 @@ export default function chart({ cachedData, options, type }) {
                 options.plugins.legend.labels ??= {}
                 options.plugins.legend.labels.generateLabels ??= (chart) => {
                     const labels =
-                        Chart.overrides[type].plugins.legend.labels.generateLabels(
-                            chart,
-                        )
+                        Chart.overrides[
+                            type
+                        ].plugins.legend.labels.generateLabels(chart)
 
                     for (const label of labels) {
                         label.strokeStyle = darken(label.fillStyle, 0.2)
@@ -173,17 +173,17 @@ export default function chart({ cachedData, options, type }) {
         normalizeDatasets(data) {
             for (const dataset of data?.datasets ?? []) {
                 if (type === 'bar' && dataset.backgroundColor !== undefined) {
-                    dataset.borderColor ??= darken(
-                        dataset.backgroundColor,
-                        0.2,
-                    )
+                    dataset.borderColor ??= darken(dataset.backgroundColor, 0.2)
                     dataset.hoverBorderColor ??= darken(
                         dataset.backgroundColor,
                         0.3,
                     )
                 }
 
-                if (type === 'scatter' && dataset.backgroundColor !== undefined) {
+                if (
+                    type === 'scatter' &&
+                    dataset.backgroundColor !== undefined
+                ) {
                     dataset.borderColor ??= dataset.backgroundColor
                 }
 
