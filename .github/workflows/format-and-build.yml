@@ -57,6 +57,14 @@ jobs:
           key: prettier-${{ github.ref_name }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
           restore-keys: |
             prettier-${{ github.ref_name }}-${{ hashFiles('package-lock.json') }}-
+      - name: Cache Rector cache
+        # Same pattern as Pint; rector.php sets cacheDirectory to .rector.cache.
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .rector.cache
+          key: rector-${{ github.ref_name }}-${{ hashFiles('composer.lock') }}-${{ github.sha }}
+          restore-keys: |
+            rector-${{ github.ref_name }}-${{ hashFiles('composer.lock') }}-
       - name: Set up PHP
         uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # 2.37.1
         with:
