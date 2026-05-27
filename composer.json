@@ -69,7 +69,7 @@
     },
     "scripts": {
         "cs": [
-            "pint",
+            "pint --cache-file=.pint.cache",
             "npm run prettier"
         ],
         "pint": "pint --config pint-strict-imports.json --cache-file=.pint.cache",
