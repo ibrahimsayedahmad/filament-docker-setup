@@ -82,38 +82,8 @@ jobs:
       - name: Install npm dependencies
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
-      - name: Ensure Rector cache directory exists
-        # Defensive: rector should create this via withCache(), but it's
-        # silently missing in CI. Pre-creating costs nothing.
-        run: mkdir -p .rector.cache
       - name: Run code style fixes
         run: composer cs
-      - name: Inspect tool caches after composer cs (temporary diagnostic)
-        if: always()
-        run: |
-          echo "=== after composer cs ==="
-          du -sh .rector.cache 2>&1 || true
-          find .rector.cache -type f 2>/dev/null | wc -l
-          ls -la .pint.cache 2>&1 || true
-          echo
-          echo "=== hunt for rector cache files anywhere reasonable ==="
-          # The on-disk shape is XX/YY/HASH.php under a cache dir. Search broadly.
-          find . /tmp "$HOME" -maxdepth 5 -type d -name '.rector.cache*' 2>/dev/null | head -20
-          echo "--- any *.php cache files written under runner home ---"
-          find "$HOME" -maxdepth 6 -type f -name '*.php' -newer /etc/hostname 2>/dev/null | grep -i rector | head -10
-          echo
-          echo "=== dump resolved cache_dir from rector.php ==="
-          # Tiny PHP probe — load rector.php and read back the CACHE_DIR parameter
-          # that withCache() sets via SimpleParameterProvider.
-          php -r '
-            require __DIR__."/vendor/autoload.php";
-            $rectorConfigBuilder = require __DIR__."/rector.php";
-            $rectorConfigBuilder->__invoke(new \Rector\Config\RectorConfig());
-            echo "CACHE_DIR=".var_export(
-              \Rector\Configuration\Parameter\SimpleParameterProvider::provideStringParameter(\Rector\Configuration\Option::CACHE_DIR),
-              true
-            ).PHP_EOL;
-          ' 2>&1 | tail -10 || true
       - name: Build assets
         run: npm run build
       - name: Pull changes
