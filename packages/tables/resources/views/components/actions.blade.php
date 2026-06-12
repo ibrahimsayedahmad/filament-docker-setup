@@ -10,10 +10,12 @@
 ])
 
 @php
+    use Filament\Tables\Actions\BulkAction;
+
     $actions = array_filter(
         $actions,
         function ($action) use ($record): bool {
-            if (! $action instanceof \Filament\Tables\Actions\BulkAction) {
+            if (! $action instanceof BulkAction) {
                 $action->record($record);
             }
 

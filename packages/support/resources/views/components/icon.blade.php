@@ -5,10 +5,12 @@
 ])
 
 @php
-    $icon = ($alias ? \Filament\Support\Facades\FilamentIcon::resolve($alias) : null) ?: ($icon ?? $slot);
+    use Filament\Support\Facades\FilamentIcon;
+
+    $icon = ($alias ? FilamentIcon::resolve($alias) : null) ?: ($icon ?? $slot);
 @endphp
 
-@if ($icon instanceof \Illuminate\Contracts\Support\Htmlable)
+@if ($icon instanceof Htmlable)
     <span {{ $attributes->class($class) }}>
         {{ $icon }}
     </span>

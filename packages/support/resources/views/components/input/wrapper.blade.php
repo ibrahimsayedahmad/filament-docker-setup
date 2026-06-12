@@ -18,14 +18,17 @@
 ])
 
 @php
+    use Filament\Forms\Components\Actions\Action;
+    use Illuminate\Support\Arr;
+
     $prefixActions = array_filter(
         $prefixActions,
-        fn (\Filament\Forms\Components\Actions\Action $prefixAction): bool => $prefixAction->isVisible(),
+        fn (Action $prefixAction): bool => $prefixAction->isVisible(),
     );
 
     $suffixActions = array_filter(
         $suffixActions,
-        fn (\Filament\Forms\Components\Actions\Action $suffixAction): bool => $suffixAction->isVisible(),
+        fn (Action $suffixAction): bool => $suffixAction->isVisible(),
     );
 
     $hasPrefix = count($prefixActions) || $prefixIcon || filled($prefix);
@@ -46,7 +49,7 @@
     $actionsClasses = 'flex items-center gap-3';
     $labelClasses = 'fi-input-wrp-label whitespace-nowrap text-sm text-gray-500 dark:text-gray-400';
 
-    $getIconClasses = fn (string | array $color = 'gray'): string => \Illuminate\Support\Arr::toCssClasses([
+    $getIconClasses = fn (string | array $color = 'gray'): string => Arr::toCssClasses([
         'fi-input-wrp-icon h-5 w-5',
         match ($color) {
             'gray' => 'text-gray-400 dark:text-gray-500',
@@ -54,7 +57,7 @@
         },
     ]);
 
-    $getIconStyles = fn (string | array $color = 'gray'): string => \Illuminate\Support\Arr::toCssStyles([
+    $getIconStyles = fn (string | array $color = 'gray'): string => Arr::toCssStyles([
         \Filament\Support\get_color_css_variables(
             $color,
             shades: [500],
@@ -103,7 +106,7 @@
             @if (! $hasPrefix)
                 wire:loading.delay.{{ config('filament.livewire_loading_delay', 'default') }}.flex
                 wire:target="{{ $loadingIndicatorTarget }}"
-                wire:key="{{ \Illuminate\Support\Str::random() }}" {{-- Makes sure the loading indicator gets hidden again. --}}
+                wire:key="{{ Str::random() }}" {{-- Makes sure the loading indicator gets hidden again. --}}
             @endif
             @class([
                 'fi-input-wrp-prefix items-center gap-x-3 ps-3',
@@ -126,7 +129,7 @@
                 <x-filament::icon
                     :attributes="
                         \Filament\Support\prepare_inherited_attributes(
-                            new \Illuminate\View\ComponentAttributeBag([
+                            new ComponentAttributeBag([
                                 'alias' => $prefixIconAlias,
                                 'icon' => $prefixIcon,
                                 'wire:loading.remove.delay.' . config('filament.livewire_loading_delay', 'default') => $hasLoadingIndicator,
@@ -143,7 +146,7 @@
                 <x-filament::loading-indicator
                     :attributes="
                         \Filament\Support\prepare_inherited_attributes(
-                            new \Illuminate\View\ComponentAttributeBag([
+                            new ComponentAttributeBag([
                                 'wire:loading.delay.' . config('filament.livewire_loading_delay', 'default') => $hasPrefix,
                                 'wire:target' => $hasPrefix ? $loadingIndicatorTarget : null,
                             ])

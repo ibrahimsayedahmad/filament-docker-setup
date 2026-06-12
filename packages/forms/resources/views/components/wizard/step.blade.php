@@ -1,8 +1,10 @@
 @php
+    use Illuminate\Support\Arr;
+
     $id = $getId();
     $isContained = $getContainer()->getParentComponent()->isContained();
 
-    $activeStepClasses = \Illuminate\Support\Arr::toCssClasses([
+    $activeStepClasses = Arr::toCssClasses([
         'fi-active',
         'p-6' => $isContained,
         'mt-6' => ! $isContained,

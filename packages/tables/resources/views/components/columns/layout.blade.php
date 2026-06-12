@@ -6,7 +6,10 @@
 ])
 
 @php
-    $getHiddenClasses = function (Filament\Tables\Columns\Column | Filament\Tables\Columns\Layout\Component $layoutComponent): ?string {
+    use Filament\Tables\Columns\Column;
+    use Filament\Tables\Columns\Layout\Component;
+
+    $getHiddenClasses = function (Column | Component $layoutComponent): ?string {
         if ($breakpoint = $layoutComponent->getHiddenFrom()) {
             return match ($breakpoint) {
                 'sm' => 'sm:hidden',
@@ -33,10 +36,12 @@
 
 @foreach ($components as $layoutComponent)
     @php
+        use Filament\Tables\Columns\Column;
+
         $layoutComponent->record($record);
         $layoutComponent->rowLoop($rowLoop);
 
-        $isColumn = $layoutComponent instanceof \Filament\Tables\Columns\Column;
+        $isColumn = $layoutComponent instanceof Column;
     @endphp
 
     @if ($layoutComponent->isVisible())

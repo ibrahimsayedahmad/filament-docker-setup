@@ -13,7 +13,7 @@
     <x-filament::loading-indicator
         :attributes="
             \Filament\Support\prepare_inherited_attributes(
-                new \Illuminate\View\ComponentAttributeBag([
+                new ComponentAttributeBag([
                     'wire:loading.delay.' . config('filament.livewire_loading_delay', 'default') => '',
                     'wire:target' => 'reorderTable',
                 ])

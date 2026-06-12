@@ -62,6 +62,6 @@
             </main>
         </div>
 
-        {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::FOOTER, scopes: $livewire?->getRenderHookScopes()) }}
+        {{ FilamentView::renderHook(PanelsRenderHook::FOOTER, scopes: $livewire?->getRenderHookScopes()) }}
     </div>
 </x-filament-panels::layout.base>

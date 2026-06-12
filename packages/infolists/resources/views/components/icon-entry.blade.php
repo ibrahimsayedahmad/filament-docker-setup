@@ -4,13 +4,16 @@
 
 <x-dynamic-component :component="$getEntryWrapperView()" :entry="$entry">
     @php
+        use Illuminate\Support\Arr;
+        use Illuminate\Support\Collection;
+
         $arrayState = $getState();
 
-        if ($arrayState instanceof \Illuminate\Support\Collection) {
+        if ($arrayState instanceof Collection) {
             $arrayState = $arrayState->all();
         }
 
-        $arrayState = \Illuminate\Support\Arr::wrap($arrayState);
+        $arrayState = Arr::wrap($arrayState);
     @endphp
 
     <div

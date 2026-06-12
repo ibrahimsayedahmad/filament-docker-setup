@@ -25,7 +25,7 @@
                 </a>
 
                 <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    {{ \Composer\InstalledVersions::getPrettyVersion('filament/filament') }}
+                    {{ InstalledVersions::getPrettyVersion('filament/filament') }}
                 </p>
             </div>
 

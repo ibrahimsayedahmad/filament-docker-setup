@@ -7,9 +7,10 @@
 
 @php
     use Illuminate\Contracts\Pagination\CursorPaginator;
+    use Illuminate\Pagination\LengthAwarePaginator;
 
     $isRtl = __('filament-panels::layout.direction') === 'rtl';
-    $isSimple = ! $paginator instanceof \Illuminate\Pagination\LengthAwarePaginator;
+    $isSimple = ! $paginator instanceof LengthAwarePaginator;
 @endphp
 
 <nav
@@ -51,9 +52,9 @@
                     'filament::components/pagination.overview',
                     $paginator->total(),
                     [
-                        'first' => \Illuminate\Support\Number::format($paginator->firstItem() ?? 0),
-                        'last' => \Illuminate\Support\Number::format($paginator->lastItem() ?? 0),
-                        'total' => \Illuminate\Support\Number::format($paginator->total()),
+                        'first' => Number::format($paginator->firstItem() ?? 0),
+                        'last' => Number::format($paginator->lastItem() ?? 0),
+                        'total' => Number::format($paginator->total()),
                     ],
                 )
             }}

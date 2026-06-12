@@ -17,6 +17,7 @@
     use Filament\Tables\Columns\Column;
     use Filament\Tables\Enums\ActionsPosition;
     use Filament\Tables\Enums\RecordCheckboxPosition;
+    use Illuminate\Contracts\Pagination\Paginator;
 
     if ($groupsOnly && $groupColumn) {
         $columns = collect($columns)
@@ -24,7 +25,7 @@
             ->all();
     }
 
-    $hasPageSummary = (! $groupsOnly) && $records instanceof \Illuminate\Contracts\Pagination\Paginator && $records->hasPages();
+    $hasPageSummary = (! $groupsOnly) && $records instanceof Paginator && $records->hasPages();
 
     $pageTableSummaryQuery = $hasPageSummary ? $this->getPageTableSummaryQuery() : null;
     $allTableSummaryQuery = $this->getAllTableSummaryQuery();

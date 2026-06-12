@@ -4,14 +4,16 @@
 ])
 
 @php
+    use Filament\Infolists\Components\Actions\Action;
+
     $prefixActions = array_filter(
         $prefixActions,
-        fn (\Filament\Infolists\Components\Actions\Action $prefixAction): bool => $prefixAction->isVisible(),
+        fn (Action $prefixAction): bool => $prefixAction->isVisible(),
     );
 
     $suffixActions = array_filter(
         $suffixActions,
-        fn (\Filament\Infolists\Components\Actions\Action $suffixAction): bool => $suffixAction->isVisible(),
+        fn (Action $suffixAction): bool => $suffixAction->isVisible(),
     );
 
     $affixActionsClasses = 'flex items-center gap-3 self-stretch';
