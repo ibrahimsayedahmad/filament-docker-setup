@@ -13,13 +13,12 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $title = 'Welcome';
 
-    protected ?string $heading = 'Welcome to the Filament Demo!';
+    protected ?string $heading = 'Welcome to our Demo Project';
 
     public function getWidgets(): array
     {
         return [
             AccountWidget::class,
-            FilamentInfoWidget::class,
             FeaturesOverview::class,
         ];
     }
