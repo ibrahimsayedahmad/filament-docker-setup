@@ -1,0 +1,13 @@
+dev.isa-alltech.com {
+    root * /var/www/html/public
+
+    encode gzip
+
+    request_body {
+        max_size 110MB
+    }
+
+    php_fastcgi app:9000
+
+    file_server
+}

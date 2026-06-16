@@ -1,0 +1,82 @@
+services:
+  # PHP App
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: med_events_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./php-fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
+    depends_on:
+      - mysql
+      - redis
+    #      - newrelic-daemon # if newrelic monitoring is enabled
+    networks:
+      - med_events_network
+
+  # Database
+  mysql:
+    image: mysql:8.0
+    container_name: med_events_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: dev_med_events
+      MYSQL_ROOT_PASSWORD: "u45hf1#o4iJAO0Ll"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - med_events_network
+
+  # Cache
+  redis:
+    image: redis:alpine
+    container_name: med_events_redis
+    restart: unless-stopped
+    networks:
+      - med_events_network
+
+  # Web Server
+  webserver:
+    image: caddy:latest
+    container_name: med_events_web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www/html
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - med_events_network
+
+  queue:
+    build: .
+    container_name: med_events_queue
+    restart: unless-stopped
+    user: "33:33"
+    command: php artisan queue:work --tries=3
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+    #      - newrelic-daemon # if newrelic monitoring is enabled
+    networks:
+      - med_events_network
+
+
+networks:
+  med_events_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
